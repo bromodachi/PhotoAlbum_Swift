@@ -32,6 +32,10 @@ class Album :Hashable{
         return albumName
     }
     
+    func setAlbumName(albumN: String){
+        albumName = albumN
+    }
+    
     
     var hashValue : Int{
         get {

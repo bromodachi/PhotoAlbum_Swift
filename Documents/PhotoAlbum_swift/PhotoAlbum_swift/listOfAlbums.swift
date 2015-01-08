@@ -13,35 +13,70 @@ extension UIPopoverController {
         get { return false }
     }
 }
+//TO DO: Multiple edits works but doesn't when you're trying to switch names. Fix this?
+//Clean up code
 
-
-class listOfAlbums: UITableViewController {
+class listOfAlbums: UITableViewController{
 
     var albums: Array<Album> =  []
     var alert: UIAlertController!
-    
-    var popController:UITableViewController =   PopController()
-    
+    var optionChoices:[String] = ["Rename", "Delete Multiple"]
+
     var makePrivateBool:Bool = false
+    
+    var doWork:Bool = false
+    var completeActivated:Bool = false
+    var index:Int = -1
+    
+    var dialog:UITableView!
     
 
     @IBOutlet weak var addAlbum: UIButton!
 
+    //hold more buttons on the right
+    var buttonDictionary: [UIBarButtonItem]!
 
-    @IBOutlet weak var showMenuPop: UIBarButtonItem!
 
 
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        addButtons()
         albums = [Album]()
         viewDidAppear(false)
-        popController.view.hidden=true
+        createDialog()
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
         
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+    }
+    
+    func createDialog(){
+        let frame = CGRectMake(200, 0, 200, 600);
+        dialog = UITableView(frame: frame)
+        dialog.bounds = frame
+        dialog.setTranslatesAutoresizingMaskIntoConstraints(false)
+        dialog.autoresizingMask = UIViewAutoresizing.FlexibleRightMargin
+        self.view.addSubview(dialog)
+        dialog.hidden = true
+        dialog.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        dialog.delegate = self;
+        dialog.dataSource = self;
+        
+        self.tableView.reloadData()
+        
+        
+    }
+    func addButtons(){
+        let select: Selector = "showOptions:"
+        let button1 = UIBarButtonItem(title: "完成", style: UIBarButtonItemStyle.Plain, target: self, action: select)
+        let button2 = UIBarButtonItem(title: "World", style:  UIBarButtonItemStyle.Plain, target: self, action: select)
+        let button3 = UIBarButtonItem(title: "|||", style:  UIBarButtonItemStyle.Plain, target: self, action: select)
+        buttonDictionary = [button3, button1, button2]
+        let buttonArray:NSArray =  buttonDictionary
+        //  view.addConstraints(view_constraint_V)
+        self.navigationItem.rightBarButtonItems = buttonArray
     }
     
     override func didReceiveMemoryWarning() {
@@ -77,25 +112,105 @@ popController.presentPopoverFromRect(sender.frame, inView: self.view, permittedA
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete method implementation.
         // Return the number of rows in the section.
-        return albums.count
+        if(tableView == self.view){
+            return albums.count
+        }
+        else{
+            return optionChoices.count
+        }
     }
 
+    
+    @IBAction func showOptions(sender: UIBarButtonItem) {
+        if(sender.title == "|||"){
+            dialog.hidden  = false
+        }
+        else if(sender.title == "完成"){
+            
+            dialog.hidden  = true
+            completeActivated = true
+            doWork = false
+            dispatch_async(dispatch_get_main_queue()) {
+                self.tableView.reloadData()
+               
+            }
+            
+            
+        }
+        else{
+            dialog.hidden  = true
+        }
+        
+    }
+    
+    //hide the options
+    override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+       
+
+    }
     
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let CellId: String = "Cell"
        
-        var cell: CustomCell = tableView.dequeueReusableCellWithIdentifier(CellId) as CustomCell
+       
+        if(tableView == self.view){
+             var cell: CustomCell = tableView.dequeueReusableCellWithIdentifier(CellId) as CustomCell
         //cell.textLabel?.text = self.albums[indexPath.row].getAlbumName()
-        var get: Album = albums[indexPath.row]
-        cell.setAlbumNameLabel( get.getAlbumName())
-        cell.setPreviewImage()
-        //TODO: Move this in the custom cell
-        let stringNum:String = "# Photos:"
-        let albumNum:String = String(get.getNumOfPhotos())
-        let finalString = stringNum+" " + albumNum
-        cell.setNumberOfPhotos( finalString)
-        return cell
+            println("How many items in albums?")
+            println(albums.count)
+            println("Int in rows?")
+            println(indexPath.row)
+           
+            var get: Album = albums[indexPath.row]
+            cell.setAlbumNameLabel( get.getAlbumName())
+            cell.setAlbumNameEditable(false, replaceText: false)
+            if(doWork){
+                println(index)
+                cell.setAlbumNameEditable(true, replaceText: false)
+             /*   if(!(index == -1)){
+                    if(index == indexPath.row){
+                        cell.setAlbumNameEditable(true)
+                    }
+                    
+                }*/
+               // doWork = false
+               // index = -1
+            }
+            if(completeActivated){
+               
+                addAlbum.hidden = false
+                var add:Album =  Album(AlbumName: cell.albumEditable.text)
+                if let i = find(albums, add){
+                    //show error dialog
+                    println("already have this album name")
+                    cell.setAlbumNameEditable(false, replaceText: false)
+                }
+                else{
+                 cell.setAlbumNameEditable(false, replaceText: true)
+                get.setAlbumName(cell.albumEditable.text)
+                println("testing: what name: ")
+                println(cell.albumEditable.text)
+                cell.setAlbumNameLabel( get.getAlbumName())
+                }
+            }
+            let counter = albums.count - 1
+            if(counter == indexPath.row && completeActivated == true){
+                completeActivated = false
+            }
+            cell.setPreviewImage()
+            //TODO: Move this in the custom cell
+            let stringNum:String = "# Photos:"
+            let albumNum:String = String(get.getNumOfPhotos())
+            let finalString = stringNum+" " + albumNum
+            cell.setNumberOfPhotos( finalString)
+            return cell
+        }
+        else{
+            let cell = tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath: indexPath) as UITableViewCell
+            cell.textLabel?.text = optionChoices[indexPath.row]
+            return cell
+        }
     }
     
     
@@ -104,13 +219,54 @@ popController.presentPopoverFromRect(sender.frame, inView: self.view, permittedA
         // Return NO if you do not want the specified item to be editable.
         return true
     }
+    //did select method
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+       
+        if(tableView == self.view){
+            dialog.hidden = true
+            /*if(doWork){
+                makeAlbumsEditable(indexPath)
+                index = indexPath.row
+            }*/
+           
+        }
+        else {
+            
+            let choice = optionChoices [ indexPath.row]
+            if(choice == "Rename"){
+               dialog.hidden = true
+                doWork=true
+                addAlbum.hidden = true
+                dispatch_async(dispatch_get_main_queue()) {
+                    self.tableView.reloadData()
+                }
+            }
+            
+        }
+    }
     
+    func makeAlbumsEditable(indexPath: NSIndexPath){
+        println("here in album editable")
+        let CellId: String = "Cell"
+        index = indexPath.row
+        var cell: CustomCell = tableView.dequeueReusableCellWithIdentifier(CellId) as CustomCell
+        cell.setAlbumNameEditable(true, replaceText: false)
+        dispatch_async(dispatch_get_main_queue()) {
+            self.tableView.reloadData()
+        }
+        
+       
+        
+    }
+    
+
     
    /* @IBAction func showAddDialog(sender: UIButton) {
         viewDidAppear(true )
     }*/
     
     @IBAction func showAddDialog(sender: UIButton) {
+        dialog.hidden = true
         viewDidAppear(true )
     }
     func addAlbumWithoutPassword(albumName:String){
@@ -146,20 +302,6 @@ popController.presentPopoverFromRect(sender.frame, inView: self.view, permittedA
     }
     
     
-    
-    @IBAction func showMenuItemPopUp(sender: UIBarButtonItem) {
-        let popController =   PopController()
-        let test = popController.view
-        test.frame = CGRectMake( 200, 200, 100, 100 );
-        self.view.addSubview(test)
-        self.view.bringSubviewToFront(test)
-       
-       /* var popController = UIPopoverController(contentViewController: playerInformationViewController)
-        
-        popController.popoverContentSize = CGSize(width: 50, height: 50)
-        popController.contentViewController.preferredContentSize =  CGSizeMake(320, 550)
-        popController.presentPopoverFromBarButtonItem(sender, permittedArrowDirections: UIPopoverArrowDirection.Up, animated: true)*/
-    }
     //prompt the user to input a album name
     override func viewDidAppear(animated: Bool) {
         makePrivateBool=false
@@ -260,6 +402,7 @@ popController.presentPopoverFromRect(sender.frame, inView: self.view, permittedA
         }
     }
     
+    /*For options menu's table*/
     
     
     /*
