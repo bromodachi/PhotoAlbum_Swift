@@ -1,5 +1,5 @@
 # PhotoAlbum_Swift
-Please note, there are some files that aren't supposed to be repo. I need to remove some of them. The only ones that are actually
+Please note, there are some files that aren't supposed to be in the repo; I need to remove some of them. The only ones that are actually
 used are listOfAlbums.swift, CustomCell.swift, hiroshi.png, and Album.swift.
 This is really barebones at the moment. All you can do is add, delete, and rename albums(you can rename mutiple of them at a time).
 
