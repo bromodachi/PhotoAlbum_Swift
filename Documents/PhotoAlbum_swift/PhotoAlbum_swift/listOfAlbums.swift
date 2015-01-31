@@ -8,20 +8,22 @@
 
 import UIKit
 
-extension UIPopoverController {
-    class var _popoversDisabled : Bool {
-        get { return false }
+extension Array {
+    mutating func removeAtIndexes (ixs:[Int]) -> () {
+        for i in ixs.sorted(>) {
+            self.removeAtIndex(i)
+        }
     }
 }
 //TO DO: Multiple edits works but doesn't when you're trying to switch names. Fix this?
 //Clean up code
 
 class listOfAlbums: UITableViewController{
-
+    
     var albums: Array<Album> =  []
     var alert: UIAlertController!
     var optionChoices:[String] = ["Rename", "Delete Multiple"]
-
+    
     var makePrivateBool:Bool = false
     
     var doWork:Bool = false
@@ -30,18 +32,17 @@ class listOfAlbums: UITableViewController{
     
     var dialog:UITableView!
     
-
+    
     @IBOutlet weak var addAlbum: UIButton!
-
+    
     //hold more buttons on the right
     var buttonDictionary: [UIBarButtonItem]!
-
-
-
-
+    
+    
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        addButtons()
         albums = [Album]()
         viewDidAppear(false)
         createDialog()
@@ -70,10 +71,10 @@ class listOfAlbums: UITableViewController{
     }
     func addButtons(){
         let select: Selector = "showOptions:"
-        let button1 = UIBarButtonItem(title: "完成", style: UIBarButtonItemStyle.Plain, target: self, action: select)
-        let button2 = UIBarButtonItem(title: "World", style:  UIBarButtonItemStyle.Plain, target: self, action: select)
-        let button3 = UIBarButtonItem(title: "|||", style:  UIBarButtonItemStyle.Plain, target: self, action: select)
-        buttonDictionary = [button3, button1, button2]
+        /*let button1 = UIBarButtonItem(title: "完成", style: UIBarButtonItemStyle.Plain, target: self, action: select)
+        let button2 = UIBarButtonItem(title: "World", style:  UIBarButtonItemStyle.Plain, target: self, action: select)*/
+        let button1 = UIBarButtonItem(title: "|||", style:  UIBarButtonItemStyle.Plain, target: self, action: select)
+        buttonDictionary = [button1]
         let buttonArray:NSArray =  buttonDictionary
         //  view.addConstraints(view_constraint_V)
         self.navigationItem.rightBarButtonItems = buttonArray
@@ -92,9 +93,9 @@ class listOfAlbums: UITableViewController{
         return 1
     }
     
-   
-  
-
+    
+    
+    
     /*let playerInformationViewController =  listMenu()
     playerInformationViewController.preferredContentSize = CGSizeMake(100, 100)
     
@@ -105,9 +106,9 @@ class listOfAlbums: UITableViewController{
     popController.presentPopoverFromRect(CGRectMake(0, 0, 48, 37), inView: self.view, permittedArrowDirections: UIPopoverArrowDirection.Down, animated: true)
     presentViewController(playerInformationViewController, animated: true, completion: nil)*/
     
-/*var popMe:UITableViewController=listMenu()
-var popController = UIPopoverController(contentViewController: popMe)
-popController.presentPopoverFromRect(sender.frame, inView: self.view, permittedArrowDirections: UIPopoverArrowDirection.Any, animated: true)*/
+    /*var popMe:UITableViewController=listMenu()
+    var popController = UIPopoverController(contentViewController: popMe)
+    popController.presentPopoverFromRect(sender.frame, inView: self.view, permittedArrowDirections: UIPopoverArrowDirection.Any, animated: true)*/
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete method implementation.
@@ -119,11 +120,32 @@ popController.presentPopoverFromRect(sender.frame, inView: self.view, permittedA
             return optionChoices.count
         }
     }
+    func deleteMultipleAlbums(add:Array<Album>, path:Array<NSIndexPath>){
+        
+        for getAlbum:Album in add{
+            if let index = find(albums, getAlbum){
+                albums.removeAtIndex(index)
+            }
+        }
 
+        self.tableView.deleteRowsAtIndexPaths(path, withRowAnimation: UITableViewRowAnimation.Automatic)
+        
+        dispatch_async(dispatch_get_main_queue()) {
+            self.tableView.reloadData()
+            
+        }
+        
+    }
     
     @IBAction func showOptions(sender: UIBarButtonItem) {
         if(sender.title == "|||"){
-            dialog.hidden  = false
+            if(dialog.hidden == false){
+                dialog.hidden  = true
+            }
+            else{
+                dialog.hidden  = false
+            }
+           
         }
         else if(sender.title == "完成"){
             
@@ -132,11 +154,63 @@ popController.presentPopoverFromRect(sender.frame, inView: self.view, permittedA
             doWork = false
             dispatch_async(dispatch_get_main_queue()) {
                 self.tableView.reloadData()
-               
+                
             }
             
             
         }
+        else if(sender.title == "削除する"){
+            println(self.tableView.indexPathForSelectedRow())
+            println(self.tableView.indexPathForSelectedRow()?.length)
+            if(self.tableView.indexPathForSelectedRow()?.length == nil){
+                //do nothing 
+                buttonDictionary[0].title = "|||"
+                addAlbum.hidden = false
+                self.tableView.setEditing(false, animated: true)
+                
+                self.tableView.allowsMultipleSelectionDuringEditing = false
+            }
+            else{
+               var arrayOfAlbums: Array<Album> = [Album]()
+                var arrayOfIndexPaths: Array<NSIndexPath> = [NSIndexPath]()
+                if let indices:NSArray = self.tableView.indexPathsForSelectedRows(){
+                    println("I should be deleting")
+                    
+                    for var i = 0 ;  i < indices.count ; ++i{
+                        var indexPath = indices.objectAtIndex(i) as NSIndexPath
+                        
+                        var remove:Album = albums[indexPath.row]
+                        arrayOfAlbums.append(remove)
+                        arrayOfIndexPaths.append(indexPath)
+                    }
+                   deleteMultipleAlbums(arrayOfAlbums, path: arrayOfIndexPaths)
+                 /*if let indices:NSArray = self.tableView.indexPathsForSelectedRows(){
+                    for (index, value) in enumerate(indices) {
+                        println(value.row)
+                        //albums.removeAtIndex(value.row)
+                        let x = value as NSIndexPath
+                        println(value.indexPath)
+                        
+                        if(albums.count == 0){
+                            buttonDictionary[0].title = ""
+                        }
+                    }
+                    self.tableView.deleteRowsAtIndexPaths(indices, withRowAnimation: UITableViewRowAnimation.Automatic)*/
+                    self.tableView.setEditing(false, animated: true)
+
+                    self.tableView.allowsMultipleSelectionDuringEditing = false
+                    addAlbum.hidden = false
+                    
+                
+                   
+                
+                }
+                else{
+                    println("fucked up")
+                }
+            }
+        }
+
         else{
             dialog.hidden  = true
         }
@@ -145,40 +219,40 @@ popController.presentPopoverFromRect(sender.frame, inView: self.view, permittedA
     
     //hide the options
     override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-       
-
+        
+        
     }
     
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let CellId: String = "Cell"
-       
-       
+        
+        
         if(tableView == self.view){
-             var cell: CustomCell = tableView.dequeueReusableCellWithIdentifier(CellId) as CustomCell
-        //cell.textLabel?.text = self.albums[indexPath.row].getAlbumName()
+            var cell: CustomCell = tableView.dequeueReusableCellWithIdentifier(CellId) as CustomCell
+            //cell.textLabel?.text = self.albums[indexPath.row].getAlbumName()
             println("How many items in albums?")
             println(albums.count)
             println("Int in rows?")
             println(indexPath.row)
-           
+            
             var get: Album = albums[indexPath.row]
             cell.setAlbumNameLabel( get.getAlbumName())
             cell.setAlbumNameEditable(false, replaceText: false)
             if(doWork){
                 println(index)
                 cell.setAlbumNameEditable(true, replaceText: false)
-             /*   if(!(index == -1)){
-                    if(index == indexPath.row){
-                        cell.setAlbumNameEditable(true)
-                    }
-                    
+                /*   if(!(index == -1)){
+                if(index == indexPath.row){
+                cell.setAlbumNameEditable(true)
+                }
+                
                 }*/
-               // doWork = false
-               // index = -1
+                // doWork = false
+                // index = -1
             }
             if(completeActivated){
-               
+                
                 addAlbum.hidden = false
                 var add:Album =  Album(AlbumName: cell.albumEditable.text)
                 if let i = find(albums, add){
@@ -187,12 +261,13 @@ popController.presentPopoverFromRect(sender.frame, inView: self.view, permittedA
                     cell.setAlbumNameEditable(false, replaceText: false)
                 }
                 else{
-                 cell.setAlbumNameEditable(false, replaceText: true)
-                get.setAlbumName(cell.albumEditable.text)
-                println("testing: what name: ")
-                println(cell.albumEditable.text)
-                cell.setAlbumNameLabel( get.getAlbumName())
+                    cell.setAlbumNameEditable(false, replaceText: true)
+                    get.setAlbumName(cell.albumEditable.text)
+                    println("testing: what name: ")
+                    println(cell.albumEditable.text)
+                    cell.setAlbumNameLabel( get.getAlbumName())
                 }
+                buttonDictionary[0].title = "|||"
             }
             let counter = albums.count - 1
             if(counter == indexPath.row && completeActivated == true){
@@ -221,25 +296,38 @@ popController.presentPopoverFromRect(sender.frame, inView: self.view, permittedA
     }
     //did select method
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-       
+        
         if(tableView == self.view){
             dialog.hidden = true
             /*if(doWork){
-                makeAlbumsEditable(indexPath)
-                index = indexPath.row
+            makeAlbumsEditable(indexPath)
+            index = indexPath.row
             }*/
-           
+            
         }
         else {
             
             let choice = optionChoices [ indexPath.row]
             if(choice == "Rename"){
-               dialog.hidden = true
+                dialog.hidden = true
                 doWork=true
                 addAlbum.hidden = true
+                let select: Selector = "showOptions:"
+                buttonDictionary[0].title = "完成"
+                
+                
                 dispatch_async(dispatch_get_main_queue()) {
                     self.tableView.reloadData()
                 }
+            }
+            else if (choice == "Delete Multiple"){
+                
+                self.tableView.setEditing(true, animated: true)
+                dialog.hidden = true
+                addAlbum.hidden = true
+                buttonDictionary[0].title="削除する"
+                self.tableView.allowsMultipleSelectionDuringEditing = true
+
             }
             
         }
@@ -255,14 +343,14 @@ popController.presentPopoverFromRect(sender.frame, inView: self.view, permittedA
             self.tableView.reloadData()
         }
         
-       
+        
         
     }
     
-
     
-   /* @IBAction func showAddDialog(sender: UIButton) {
-        viewDidAppear(true )
+    
+    /* @IBAction func showAddDialog(sender: UIButton) {
+    viewDidAppear(true )
     }*/
     
     @IBAction func showAddDialog(sender: UIButton) {
@@ -283,12 +371,12 @@ popController.presentPopoverFromRect(sender.frame, inView: self.view, permittedA
             //I forgot what the other case was.
         else{
             var add:Album = Album(AlbumName: albumName, pass: pass1)
-             doTheActualAdding(add)
+            doTheActualAdding(add)
         }
-      
+        
     }
     
-  
+    
     func doTheActualAdding(add:Album){
         if let i = find(albums, add){
             //show error dialog
@@ -297,6 +385,7 @@ popController.presentPopoverFromRect(sender.frame, inView: self.view, permittedA
         else{
             
             albums.append(add)
+            addButtons()
             self.tableView.reloadData()
         }
     }
@@ -356,7 +445,7 @@ popController.presentPopoverFromRect(sender.frame, inView: self.view, permittedA
         alert.addTextFieldWithConfigurationHandler { (textField) in
             textField.placeholder = "Password Confirmation"
             textField.secureTextEntry = true
-             textField.enabled = false
+            textField.enabled = false
         }
         
         
@@ -380,13 +469,16 @@ popController.presentPopoverFromRect(sender.frame, inView: self.view, permittedA
             
             albums.removeAtIndex(indexPath.row)
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+            if(albums.count == 0){
+                buttonDictionary[0].title = ""
+            }
         } else if editingStyle == .Insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
         }
     }
     
     func makePrivateAlbum(sender:UISwitch){
-    
+        
         let pass1TextField = self.alert.textFields![1] as UITextField
         let pass2TextField = self.alert.textFields![2] as UITextField
         if(sender.on==true){

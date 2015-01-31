@@ -10,8 +10,8 @@ import UIKit
 
 class CustomCell: UITableViewCell {
 
-    @IBOutlet weak var albumEditable: UITextField!
     @IBOutlet weak var albumPreview: UIImageView!
+    @IBOutlet weak var albumEditable: UITextField!
     @IBOutlet weak var albumName: UILabel!
     @IBOutlet weak var dateRange: UILabel!
     @IBOutlet weak var howManyPhotos: UILabel!

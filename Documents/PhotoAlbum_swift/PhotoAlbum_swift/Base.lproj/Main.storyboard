@@ -34,14 +34,20 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="w92-fv-p93">
-                                            <rect key="frame" x="124" y="59" width="100" height="21"/>
+                                            <rect key="frame" x="124" y="57" width="100" height="21"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
+                                        <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" restorationIdentifier="albumEditable" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="cg2-Af-6YT">
+                                            <rect key="frame" x="124" y="8" width="97" height="30"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <textInputTraits key="textInputTraits"/>
+                                        </textField>
                                     </subviews>
                                 </tableViewCellContentView>
                                 <connections>
+                                    <outlet property="albumEditable" destination="cg2-Af-6YT" id="MKs-5E-WKx"/>
                                     <outlet property="albumName" destination="KKA-xv-3uD" id="k34-a2-OgH"/>
                                     <outlet property="albumPreview" destination="2am-h6-b2v" id="haa-rp-mlT"/>
                                     <outlet property="dateRange" destination="Ggf-JL-lGm" id="VMI-IC-Al0"/>
@@ -67,15 +73,9 @@
                                 </connections>
                             </button>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" title="Item" id="6fk-E4-kRw">
-                            <connections>
-                                <action selector="showMenuItemPopUp:" destination="Qw8-0H-FnL" id="qIA-HU-dP7"/>
-                            </connections>
-                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="addAlbum" destination="ya7-kS-2cb" id="dY1-pJ-Ane"/>
-                        <outlet property="showMenuPop" destination="6fk-E4-kRw" id="cMh-Id-OeS"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="v6O-EU-LLv" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -85,35 +85,7 @@
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                 </tableView>
             </objects>
-            <point key="canvasLocation" x="1100" y="-71"/>
-        </scene>
-        <!--Pop Controller-->
-        <scene sceneID="vPs-2m-lpY">
-            <objects>
-                <tableViewController id="pqe-XL-o1N" customClass="PopController" customModule="PhotoAlbum_swift" customModuleProvider="target" colorLabel="IBBuiltInLabel-Red" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="IJT-6X-4RK">
-                        <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" id="P7Y-q5-wQR">
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="P7Y-q5-wQR" id="UMI-zG-Mvc">
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </tableViewCellContentView>
-                            </tableViewCell>
-                        </prototypes>
-                        <connections>
-                            <outlet property="dataSource" destination="pqe-XL-o1N" id="U7h-hW-kvd"/>
-                            <outlet property="delegate" destination="pqe-XL-o1N" id="q7T-FY-2NZ"/>
-                        </connections>
-                    </tableView>
-                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-                    <size key="freeformSize" width="100" height="100"/>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="EiD-WC-8qA" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1344" y="-229"/>
+            <point key="canvasLocation" x="1318" y="527"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="7sw-Rm-fei">
