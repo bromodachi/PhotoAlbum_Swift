@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>10C8758B-1995-44C3-AE56-F7FD8DD951B3</string>
+	<key>IDESourceControlProjectName</key>
+	<string>PhotoAlbum_swift</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>7C4135BCBCBA01B0210FD478D017C4F695779E89</key>
+		<string>https://github.com/bromodachi/PhotoAlbum_Swift.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>Documents/PhotoAlbum_swift/PhotoAlbum_swift.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>7C4135BCBCBA01B0210FD478D017C4F695779E89</key>
+		<string>../../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/bromodachi/PhotoAlbum_Swift.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>7C4135BCBCBA01B0210FD478D017C4F695779E89</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>7C4135BCBCBA01B0210FD478D017C4F695779E89</string>
+			<key>IDESourceControlWCCName</key>
+			<string>PhotoAlbum_Swift</string>
+		</dict>
+	</array>
+</dict>
+</plist>
